@@ -2,159 +2,556 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================
+   TERMINAL DARK THEME - RecAI Design System
+   ============================================ */
+
 @layer base {
   :root {
-    /* Base Colors - More sophisticated palette */
-    --background: 0 0% 100%;
-    --foreground: 222 47% 11%; /* Deeper, richer black */
+    /* BACKGROUND LAYERS - Deep space hierarchy */
+    --bg-void: 225 50% 4%;         /* Deepest black */
+    --bg-base: 225 45% 7%;         /* Base surface */
+    --bg-raised: 225 40% 11%;      /* Cards, panels */
+    --bg-elevated: 225 35% 15%;    /* Modals, dropdowns */
+    --bg-hover: 225 30% 18%;       /* Hover states */
 
-    /* Card & Surfaces */
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    /* BORDERS - Subtle layering */
+    --border-subtle: 225 30% 15%;
+    --border-default: 225 25% 20%;
+    --border-strong: 225 20% 28%;
 
-    /* Primary - Confident blue with energy */
-    --primary: 217 91% 60%; /* Vibrant but professional */
-    --primary-foreground: 0 0% 100%;
+    /* PRIMARY ACCENT (Cyan/Teal) - Trading terminal signature */
+    --accent: 175 100% 45%;
+    --accent-bright: 175 100% 55%;
+    --accent-dim: 175 60% 30%;
+    --accent-ghost: 175 50% 15%;
 
-    /* Secondary */
-    --secondary: 220 13% 91%;
-    --secondary-foreground: 222 47% 11%;
+    /* PIPELINE STAGE COLORS */
+    --stage-new: 210 100% 60%;          /* Blue - Fresh candidates */
+    --stage-screening: 35 100% 55%;     /* Amber - Under review */
+    --stage-qualified: 145 70% 45%;     /* Green - Passed */
+    --stage-interview: 270 75% 60%;     /* Purple - In process */
+    --stage-submitted: 195 90% 50%;     /* Cyan - Sent to client */
+    --stage-offer: 50 100% 50%;         /* Gold - Money stage */
+    --stage-rejected: 0 75% 55%;        /* Red - Not proceeding */
 
-    /* Semantic Recruitment Colors */
-    --stage-new: 210 40% 96%; /* Soft blue-gray */
-    --stage-review: 217 91% 95%; /* Light primary */
-    --stage-pass: 142 76% 96%; /* Gentle green */
-    --stage-interview: 262 83% 96%; /* Soft purple */
-    --stage-offer: 142 71% 45%; /* Rich green */
-    --stage-rejected: 0 84% 95%; /* Soft red */
+    /* SCORE GRADIENT - 10 = excellent, 1 = poor */
+    --score-10: 145 75% 45%;
+    --score-8: 100 65% 50%;
+    --score-6: 50 85% 50%;
+    --score-4: 30 95% 50%;
+    --score-2: 5 85% 55%;
 
-    /* Evaluation Score Colors */
-    --score-excellent: 142 71% 45%; /* 8-10: Green */
-    --score-good: 48 96% 53%; /* 6-7: Yellow */
-    --score-fair: 38 92% 50%; /* 4-5: Orange */
-    --score-poor: 0 84% 60%; /* 0-3: Red */
+    /* TEXT HIERARCHY */
+    --text-primary: 0 0% 95%;
+    --text-secondary: 220 15% 65%;
+    --text-muted: 220 10% 45%;
+    --text-accent: 175 100% 65%;
 
-    /* Neutral Palette - Enhanced depth */
-    --muted: 220 13% 91%;
-    --muted-foreground: 220 9% 46%;
-    --accent: 220 13% 91%;
-    --accent-foreground: 222 47% 11%;
+    /* =============================
+       SHADCN VARIABLE MAPPINGS
+       ============================= */
+    --background: 225 45% 7%;
+    --foreground: 0 0% 95%;
 
-    /* Feedback Colors */
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
-    --success: 142 71% 45%;
-    --success-foreground: 0 0% 98%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 98%;
+    --card: 225 40% 11%;
+    --card-foreground: 0 0% 95%;
+    --popover: 225 35% 15%;
+    --popover-foreground: 0 0% 95%;
 
-    /* Borders & Inputs */
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 217 91% 60%;
+    --primary: 175 100% 45%;
+    --primary-foreground: 225 50% 4%;
 
-    /* Border Radius - Increased for modern look */
-    --radius: 0.75rem;
+    --secondary: 225 30% 18%;
+    --secondary-foreground: 0 0% 95%;
+
+    --muted: 225 25% 20%;
+    --muted-foreground: 220 15% 65%;
+    --accent: 175 100% 45%;
+    --accent-foreground: 225 50% 4%;
+
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 145 70% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 35 100% 55%;
+    --warning-foreground: 0 0% 0%;
+
+    --border: 225 25% 20%;
+    --input: 225 30% 18%;
+    --ring: 175 100% 45%;
+
+    --radius: 0.5rem;
   }
 
+  /* No light theme - terminal is always dark */
   .dark {
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
-
-    --card: 222 47% 11%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 11%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 217 19% 27%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217 19% 27%;
-    --muted-foreground: 220 9% 65%;
-    --accent: 217 19% 27%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62% 50%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217 19% 27%;
-    --input: 217 19% 27%;
-    --ring: 217 91% 60%;
+    /* Same as root - we're always in dark mode */
   }
 }
 
-/* Typography Scale & Base Styles */
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
 @layer base {
   * {
     @apply border-border;
   }
 
+  html {
+    font-size: 13px; /* Base 13px for terminal density */
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-terminal-void text-text-primary;
     font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Heading Hierarchy */
-  h1 {
-    @apply text-4xl font-bold tracking-tight;
-    line-height: 1.2;
+  /* Mono text for data */
+  .font-mono {
+    font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, monospace;
+    font-feature-settings: "liga" 1, "calt" 1;
   }
 
-  h2 {
-    @apply text-3xl font-semibold tracking-tight;
-    line-height: 1.3;
+  /* Selection styling */
+  ::selection {
+    background-color: hsl(var(--accent) / 0.3);
+    color: hsl(var(--text-primary));
   }
 
-  h3 {
-    @apply text-2xl font-semibold;
-    line-height: 1.4;
-  }
-
-  h4 {
-    @apply text-xl font-semibold;
-    line-height: 1.5;
-  }
-
-  h5 {
-    @apply text-lg font-medium;
-    line-height: 1.5;
-  }
-
-  h6 {
-    @apply text-base font-medium;
-    line-height: 1.5;
-  }
-
-  p {
-    line-height: 1.7;
-  }
-
-  /* Links */
-  a {
-    @apply transition-colors;
-  }
-
-  /* Better focus states */
+  /* Focus states - Terminal cyan glow */
   button:focus-visible,
   a:focus-visible,
   input:focus-visible,
   textarea:focus-visible,
-  select:focus-visible {
-    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  select:focus-visible,
+  [tabindex]:focus-visible {
+    @apply outline-none ring-2 ring-accent ring-offset-1 ring-offset-terminal-void;
+  }
+
+  /* Heading hierarchy - Tight for density */
+  h1 { @apply text-2xl font-semibold tracking-tight; }
+  h2 { @apply text-xl font-semibold tracking-tight; }
+  h3 { @apply text-lg font-medium; }
+  h4 { @apply text-base font-medium; }
+  h5 { @apply text-sm font-medium; }
+  h6 { @apply text-xs font-medium uppercase tracking-wider text-text-secondary; }
+
+  p {
+    line-height: 1.6;
+  }
+
+  /* Links */
+  a {
+    @apply text-text-accent transition-colors duration-100;
+  }
+
+  a:hover {
+    @apply text-accent-bright;
   }
 }
 
-/* Animation Keyframes */
+/* ============================================
+   CUSTOM SCROLLBAR - Terminal style
+   ============================================ */
+
+@layer utilities {
+  .scrollbar-terminal::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-terminal::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-terminal::-webkit-scrollbar-thumb {
+    background: hsl(var(--border-default));
+    border-radius: 3px;
+  }
+
+  .scrollbar-terminal::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--border-strong));
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: hsl(var(--border-default));
+    border-radius: 2px;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hidden {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ============================================
+   KEYBOARD HINT STYLES
+   ============================================ */
+
+@layer components {
+  .kbd {
+    @apply inline-flex items-center justify-center;
+    @apply h-5 min-w-[20px] px-1.5;
+    @apply rounded border border-border-strong;
+    @apply bg-terminal-elevated;
+    @apply text-2xs font-mono font-medium text-text-secondary;
+    @apply shadow-terminal-sm;
+  }
+
+  .kbd-sm {
+    @apply h-4 min-w-[16px] px-1;
+    @apply text-2xs;
+  }
+
+  .kbd-lg {
+    @apply h-6 min-w-[24px] px-2;
+    @apply text-xs;
+  }
+}
+
+/* ============================================
+   STAGE BADGE UTILITIES
+   ============================================ */
+
+@layer utilities {
+  .stage-pill {
+    @apply inline-flex items-center gap-1.5;
+    @apply px-2 py-0.5 rounded-full;
+    @apply text-xs font-medium font-mono;
+  }
+
+  .stage-new {
+    background-color: hsl(var(--stage-new) / 0.15);
+    color: hsl(var(--stage-new));
+    border: 1px solid hsl(var(--stage-new) / 0.25);
+  }
+
+  .stage-screening {
+    background-color: hsl(var(--stage-screening) / 0.15);
+    color: hsl(var(--stage-screening));
+    border: 1px solid hsl(var(--stage-screening) / 0.25);
+  }
+
+  .stage-qualified {
+    background-color: hsl(var(--stage-qualified) / 0.15);
+    color: hsl(var(--stage-qualified));
+    border: 1px solid hsl(var(--stage-qualified) / 0.25);
+  }
+
+  .stage-interview {
+    background-color: hsl(var(--stage-interview) / 0.15);
+    color: hsl(var(--stage-interview));
+    border: 1px solid hsl(var(--stage-interview) / 0.25);
+  }
+
+  .stage-submitted {
+    background-color: hsl(var(--stage-submitted) / 0.15);
+    color: hsl(var(--stage-submitted));
+    border: 1px solid hsl(var(--stage-submitted) / 0.25);
+  }
+
+  .stage-offer {
+    background-color: hsl(var(--stage-offer) / 0.15);
+    color: hsl(var(--stage-offer));
+    border: 1px solid hsl(var(--stage-offer) / 0.25);
+  }
+
+  .stage-rejected {
+    background-color: hsl(var(--stage-rejected) / 0.15);
+    color: hsl(var(--stage-rejected));
+    border: 1px solid hsl(var(--stage-rejected) / 0.25);
+  }
+}
+
+/* ============================================
+   SCORE BADGE UTILITIES
+   ============================================ */
+
+@layer utilities {
+  .score-badge {
+    @apply inline-flex items-center justify-center;
+    @apply min-w-[28px] h-6 px-2 rounded;
+    @apply text-xs font-mono font-semibold;
+    @apply transition-transform duration-100;
+  }
+
+  .score-badge:hover {
+    @apply scale-105;
+  }
+
+  .score-10, .score-9 {
+    background-color: hsl(var(--score-10) / 0.2);
+    color: hsl(var(--score-10));
+    border: 1px solid hsl(var(--score-10) / 0.3);
+  }
+
+  .score-8, .score-7 {
+    background-color: hsl(var(--score-8) / 0.2);
+    color: hsl(var(--score-8));
+    border: 1px solid hsl(var(--score-8) / 0.3);
+  }
+
+  .score-6, .score-5 {
+    background-color: hsl(var(--score-6) / 0.2);
+    color: hsl(var(--score-6));
+    border: 1px solid hsl(var(--score-6) / 0.3);
+  }
+
+  .score-4, .score-3 {
+    background-color: hsl(var(--score-4) / 0.2);
+    color: hsl(var(--score-4));
+    border: 1px solid hsl(var(--score-4) / 0.3);
+  }
+
+  .score-2, .score-1, .score-0 {
+    background-color: hsl(var(--score-2) / 0.2);
+    color: hsl(var(--score-2));
+    border: 1px solid hsl(var(--score-2) / 0.3);
+  }
+}
+
+/* ============================================
+   TABLE ROW STYLES
+   ============================================ */
+
+@layer utilities {
+  .table-row-terminal {
+    @apply h-table-row;
+    @apply border-b border-border-subtle;
+    @apply transition-colors duration-50;
+  }
+
+  .table-row-terminal:hover {
+    @apply bg-terminal-hover;
+  }
+
+  .table-row-terminal.selected {
+    @apply bg-accent-ghost;
+  }
+
+  .table-row-terminal.focused {
+    @apply bg-terminal-hover;
+    box-shadow: inset 2px 0 0 hsl(var(--accent));
+  }
+}
+
+/* ============================================
+   TERMINAL PANEL STYLES
+   ============================================ */
+
+@layer components {
+  .terminal-panel {
+    @apply bg-terminal-raised border border-border-default rounded-lg;
+    @apply shadow-terminal;
+  }
+
+  .terminal-panel-elevated {
+    @apply bg-terminal-elevated border border-border-strong rounded-lg;
+    @apply shadow-terminal-md;
+  }
+
+  .terminal-card {
+    @apply bg-terminal-raised border border-border-subtle rounded;
+    @apply p-3;
+  }
+
+  .terminal-input {
+    @apply bg-terminal-base border border-border-default rounded;
+    @apply px-3 py-2 text-sm;
+    @apply text-text-primary placeholder:text-text-muted;
+    @apply transition-all duration-100;
+    @apply focus:border-accent focus:ring-1 focus:ring-accent;
+  }
+}
+
+/* ============================================
+   ICON SIDEBAR STYLES
+   ============================================ */
+
+@layer components {
+  .sidebar-icon {
+    @apply flex items-center justify-center;
+    @apply w-10 h-10 rounded-lg;
+    @apply text-text-secondary;
+    @apply transition-all duration-100;
+    @apply relative;
+  }
+
+  .sidebar-icon:hover {
+    @apply bg-terminal-hover text-text-primary;
+  }
+
+  .sidebar-icon.active {
+    @apply text-accent;
+  }
+
+  .sidebar-icon.active::before {
+    content: '';
+    @apply absolute left-0 top-1/2 -translate-y-1/2;
+    @apply w-0.5 h-5 rounded-r;
+    @apply bg-accent;
+  }
+}
+
+/* ============================================
+   COMMAND BAR STYLES
+   ============================================ */
+
+@layer components {
+  .command-bar {
+    @apply h-command-bar;
+    @apply bg-terminal-base border-b border-border-default;
+    @apply flex items-center px-4 gap-4;
+  }
+
+  .command-bar-search {
+    @apply flex items-center gap-2;
+    @apply bg-terminal-raised border border-border-subtle rounded;
+    @apply px-3 h-8;
+    @apply text-sm text-text-secondary;
+    @apply transition-all duration-100;
+    @apply cursor-pointer;
+  }
+
+  .command-bar-search:hover {
+    @apply border-border-default bg-terminal-hover;
+  }
+
+  .command-bar-search:focus-within {
+    @apply border-accent ring-1 ring-accent;
+  }
+}
+
+/* ============================================
+   METRICS RIBBON STYLES
+   ============================================ */
+
+@layer components {
+  .metrics-ribbon {
+    @apply h-metrics-ribbon;
+    @apply bg-terminal-base border-b border-border-subtle;
+    @apply flex items-center px-4 gap-2;
+    @apply overflow-x-auto scrollbar-hidden;
+  }
+
+  .metric-pill {
+    @apply inline-flex items-center gap-1.5;
+    @apply px-2.5 py-1 rounded-full;
+    @apply text-xs font-medium;
+    @apply transition-all duration-100;
+    @apply cursor-pointer select-none;
+    @apply whitespace-nowrap;
+  }
+
+  .metric-pill:hover {
+    @apply scale-105;
+  }
+
+  .metric-pill.active {
+    @apply ring-2 ring-offset-1 ring-offset-terminal-base;
+  }
+}
+
+/* ============================================
+   SHORTCUT BAR STYLES
+   ============================================ */
+
+@layer components {
+  .shortcut-bar {
+    @apply h-shortcut-bar;
+    @apply bg-terminal-base border-t border-border-subtle;
+    @apply flex items-center px-4 gap-4;
+    @apply text-xs text-text-muted;
+  }
+
+  .shortcut-item {
+    @apply inline-flex items-center gap-1.5;
+  }
+}
+
+/* ============================================
+   QUICK PREVIEW PANEL
+   ============================================ */
+
+@layer components {
+  .preview-panel {
+    @apply fixed top-0 right-0 bottom-0;
+    @apply w-preview-panel max-w-full;
+    @apply bg-terminal-raised border-l border-border-default;
+    @apply shadow-terminal-lg;
+    @apply flex flex-col;
+    @apply z-50;
+  }
+
+  .preview-panel-header {
+    @apply flex items-center justify-between;
+    @apply px-4 h-12;
+    @apply border-b border-border-subtle;
+  }
+
+  .preview-panel-content {
+    @apply flex-1 overflow-y-auto scrollbar-terminal;
+    @apply p-4;
+  }
+}
+
+/* ============================================
+   BULK ACTIONS BAR
+   ============================================ */
+
+@layer components {
+  .bulk-actions-bar {
+    @apply fixed bottom-0 left-0 right-0;
+    @apply h-12 bg-terminal-elevated border-t border-border-default;
+    @apply flex items-center justify-between px-4;
+    @apply shadow-terminal-lg;
+    @apply z-40;
+    @apply animate-slide-up-fade;
+  }
+}
+
+/* ============================================
+   SKILL BAR STYLES
+   ============================================ */
+
+@layer components {
+  .skill-bar {
+    @apply h-1.5 bg-terminal-hover rounded-full overflow-hidden;
+  }
+
+  .skill-bar-fill {
+    @apply h-full rounded-full;
+    @apply transition-all duration-200 ease-out-smooth;
+  }
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
 @keyframes slide-up-fade {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -182,153 +579,298 @@
   }
 }
 
-@keyframes pulse-slow {
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 hsl(var(--accent) / 0);
+  }
+  50% {
+    box-shadow: 0 0 12px 4px hsl(var(--accent) / 0.3);
+  }
+}
+
+@keyframes counter-increment {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  51% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes blink-cursor {
   0%, 100% {
     opacity: 1;
   }
   50% {
-    opacity: 0.5;
+    opacity: 0;
   }
 }
 
-/* Utility Animation Classes */
+/* Utility animation classes */
 @layer utilities {
   .animate-slide-up {
-    animation: slide-up-fade 0.3s ease-out;
+    animation: slide-up-fade 0.2s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .animate-scale-in {
-    animation: scale-in 0.2s ease-out;
+    animation: scale-in 0.15s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .animate-shimmer {
     animation: shimmer 2s infinite linear;
     background: linear-gradient(
       to right,
-      hsl(var(--muted)) 0%,
-      hsl(var(--muted-foreground) / 0.1) 20%,
-      hsl(var(--muted)) 40%,
-      hsl(var(--muted)) 100%
+      hsl(var(--bg-raised)) 0%,
+      hsl(var(--bg-hover)) 20%,
+      hsl(var(--bg-raised)) 40%,
+      hsl(var(--bg-raised)) 100%
     );
     background-size: 1000px 100%;
   }
 
-  .animate-pulse-slow {
-    animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .animate-blink {
+    animation: blink-cursor 1s step-end infinite;
   }
 }
 
-/* Custom Scrollbar */
-@layer utilities {
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
+/* ============================================
+   TOOLTIP STYLES
+   ============================================ */
 
-  .scrollbar-thin::-webkit-scrollbar-track {
-    @apply bg-muted/50;
-    border-radius: 4px;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    @apply bg-muted-foreground/30;
-    border-radius: 4px;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    @apply bg-muted-foreground/50;
+@layer components {
+  .tooltip-terminal {
+    @apply bg-terminal-elevated border border-border-strong rounded;
+    @apply px-2 py-1;
+    @apply text-xs text-text-primary;
+    @apply shadow-terminal-md;
   }
 }
 
-/* Elevation Shadows */
-@layer utilities {
-  .shadow-elevation-sm {
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+/* ============================================
+   DIALOG/MODAL OVERRIDES
+   ============================================ */
+
+@layer components {
+  .dialog-terminal {
+    @apply bg-terminal-elevated border border-border-default rounded-lg;
+    @apply shadow-terminal-lg;
   }
 
-  .shadow-elevation {
-    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  }
-
-  .shadow-elevation-md {
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  }
-
-  .shadow-elevation-lg {
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  }
-
-  .shadow-elevation-xl {
-    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  .dialog-terminal-overlay {
+    background-color: hsl(var(--bg-void) / 0.8);
+    backdrop-filter: blur(4px);
   }
 }
 
-/* Score Badge Utilities */
-@layer utilities {
-  .score-excellent {
-    background-color: hsl(var(--score-excellent) / 0.1);
-    color: hsl(var(--score-excellent));
-    border: 1px solid hsl(var(--score-excellent) / 0.2);
+/* ============================================
+   COMMAND PALETTE STYLES
+   ============================================ */
+
+@layer components {
+  .command-palette {
+    @apply bg-terminal-elevated border border-border-default rounded-lg;
+    @apply shadow-terminal-lg;
+    @apply overflow-hidden;
   }
 
-  .score-good {
-    background-color: hsl(var(--score-good) / 0.1);
-    color: hsl(var(--score-good));
-    border: 1px solid hsl(var(--score-good) / 0.2);
+  .command-palette-input {
+    @apply w-full h-12 px-4;
+    @apply bg-transparent border-b border-border-default;
+    @apply text-base text-text-primary;
+    @apply placeholder:text-text-muted;
+    @apply focus:outline-none;
   }
 
-  .score-fair {
-    background-color: hsl(var(--score-fair) / 0.1);
-    color: hsl(var(--score-fair));
-    border: 1px solid hsl(var(--score-fair) / 0.2);
+  .command-palette-list {
+    @apply max-h-[400px] overflow-y-auto scrollbar-terminal;
+    @apply p-2;
   }
 
-  .score-poor {
-    background-color: hsl(var(--score-poor) / 0.1);
-    color: hsl(var(--score-poor));
-    border: 1px solid hsl(var(--score-poor) / 0.2);
-  }
-}
-
-/* Stage Background Utilities */
-@layer utilities {
-  .stage-new {
-    background-color: hsl(var(--stage-new));
+  .command-palette-item {
+    @apply flex items-center gap-3;
+    @apply px-3 py-2 rounded;
+    @apply text-sm text-text-secondary;
+    @apply cursor-pointer;
+    @apply transition-colors duration-50;
   }
 
-  .stage-review {
-    background-color: hsl(var(--stage-review));
+  .command-palette-item:hover,
+  .command-palette-item[aria-selected="true"] {
+    @apply bg-terminal-hover text-text-primary;
   }
 
-  .stage-pass {
-    background-color: hsl(var(--stage-pass));
+  .command-palette-item[aria-selected="true"] {
+    @apply bg-accent-ghost text-accent;
   }
 
-  .stage-interview {
-    background-color: hsl(var(--stage-interview));
-  }
-
-  .stage-offer {
-    background-color: hsl(var(--stage-offer));
-  }
-
-  .stage-rejected {
-    background-color: hsl(var(--stage-rejected));
+  .command-palette-group-heading {
+    @apply px-3 py-2;
+    @apply text-xs font-medium uppercase tracking-wider;
+    @apply text-text-muted;
   }
 }
 
-/* Improved Card Hover States */
-@layer utilities {
-  .card-interactive {
-    @apply transition-all duration-200 cursor-pointer;
+/* ============================================
+   TABS STYLES
+   ============================================ */
+
+@layer components {
+  .tabs-terminal {
+    @apply flex items-center gap-1;
+    @apply border-b border-border-subtle;
   }
 
-  .card-interactive:hover {
-    @apply shadow-elevation-md -translate-y-0.5 border-primary/30;
+  .tab-terminal {
+    @apply flex items-center gap-2;
+    @apply px-3 py-2;
+    @apply text-sm text-text-secondary;
+    @apply border-b-2 border-transparent;
+    @apply transition-all duration-100;
+    @apply cursor-pointer;
+  }
+
+  .tab-terminal:hover {
+    @apply text-text-primary bg-terminal-hover;
+  }
+
+  .tab-terminal.active {
+    @apply text-accent border-accent;
+  }
+
+  .tab-terminal .tab-count {
+    @apply inline-flex items-center justify-center;
+    @apply min-w-[20px] h-5 px-1.5;
+    @apply rounded-full;
+    @apply bg-terminal-hover;
+    @apply text-2xs font-mono font-medium text-text-muted;
+  }
+
+  .tab-terminal.active .tab-count {
+    @apply bg-accent-ghost text-accent;
   }
 }
 
-/* Screen Reader Only */
+/* ============================================
+   CHECKBOX TERMINAL STYLE
+   ============================================ */
+
+@layer components {
+  .checkbox-terminal {
+    @apply w-4 h-4 rounded;
+    @apply border border-border-default;
+    @apply bg-terminal-base;
+    @apply transition-all duration-100;
+    @apply cursor-pointer;
+  }
+
+  .checkbox-terminal:hover {
+    @apply border-border-strong;
+  }
+
+  .checkbox-terminal:checked,
+  .checkbox-terminal[data-state="checked"] {
+    @apply bg-accent border-accent;
+  }
+
+  .checkbox-terminal:focus-visible {
+    @apply ring-2 ring-accent ring-offset-1 ring-offset-terminal-base;
+  }
+}
+
+/* ============================================
+   BUTTON TERMINAL VARIANTS
+   ============================================ */
+
+@layer components {
+  .btn-terminal {
+    @apply inline-flex items-center justify-center gap-2;
+    @apply h-8 px-3 rounded;
+    @apply text-sm font-medium;
+    @apply transition-all duration-100;
+    @apply cursor-pointer;
+  }
+
+  .btn-terminal-primary {
+    @apply bg-accent text-terminal-void;
+    @apply hover:bg-accent-bright;
+  }
+
+  .btn-terminal-secondary {
+    @apply bg-terminal-raised border border-border-default text-text-primary;
+    @apply hover:bg-terminal-hover hover:border-border-strong;
+  }
+
+  .btn-terminal-ghost {
+    @apply text-text-secondary;
+    @apply hover:bg-terminal-hover hover:text-text-primary;
+  }
+
+  .btn-terminal-danger {
+    @apply bg-destructive/10 border border-destructive/20 text-destructive;
+    @apply hover:bg-destructive/20;
+  }
+}
+
+/* ============================================
+   LIVE COUNTER ANIMATION
+   ============================================ */
+
+@layer components {
+  .live-counter {
+    @apply inline-flex items-center overflow-hidden;
+    @apply font-mono tabular-nums;
+  }
+
+  .live-counter-digit {
+    @apply inline-block;
+    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .live-counter-digit.changing {
+    animation: counter-increment 0.3s ease-out;
+  }
+}
+
+/* ============================================
+   LOADING STATES
+   ============================================ */
+
+@layer components {
+  .skeleton-terminal {
+    @apply bg-terminal-hover rounded;
+    @apply animate-shimmer;
+  }
+
+  .loading-dots::after {
+    content: '';
+    animation: loading-dots 1.5s steps(4, end) infinite;
+  }
+
+  @keyframes loading-dots {
+    0%, 20% { content: ''; }
+    40% { content: '.'; }
+    60% { content: '..'; }
+    80%, 100% { content: '...'; }
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
 @layer utilities {
   .sr-only {
     position: absolute;
@@ -340,5 +882,23 @@
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border-width: 0;
+  }
+
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 focus-visible:ring-offset-terminal-void;
+  }
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

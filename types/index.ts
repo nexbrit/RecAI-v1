@@ -1,5 +1,9 @@
 // Database types for IntelStack RecAI
 
+// Pipeline Stage Types (Terminal Design System)
+export type PipelineStage = 'new' | 'screening' | 'qualified' | 'interview' | 'submitted' | 'offer' | 'rejected';
+export type PipelineStageWithAll = PipelineStage | 'all';
+
 export type OrganizationType = 'staffing_firm' | 'client';
 
 export type UserRole = 'recruiter' | 'account_manager' | 'admin';

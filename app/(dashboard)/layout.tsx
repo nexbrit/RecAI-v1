@@ -1,8 +1,7 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { Sidebar } from '@/components/shared/Sidebar';
+import { TerminalLayout } from '@/components/terminal/TerminalLayout';
 import { ToasterProvider } from '@/components/shared/ToasterProvider';
-import { CommandPalette } from '@/components/shared/CommandPalette';
 
 export default async function DashboardLayout({
   children,
@@ -27,18 +26,18 @@ export default async function DashboardLayout({
     .single();
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <Sidebar
+    <>
+      <TerminalLayout
         user={{
           email: user.email || '',
           full_name: profile?.full_name,
         }}
-      />
-      <main className="flex-1 overflow-y-auto bg-muted/30 scrollbar-thin">
-        <div className="container py-6">{children}</div>
-      </main>
-      <CommandPalette />
+        showMetrics={true}
+        showShortcuts={true}
+      >
+        {children}
+      </TerminalLayout>
       <ToasterProvider />
-    </div>
+    </>
   );
 }
