@@ -50,7 +50,7 @@ export async function generateStructuredOutput<T>(
 
   try {
     return JSON.parse(jsonString.trim());
-  } catch (error) {
+  } catch {
     // Try to find JSON object in the response
     const objectMatch = jsonString.match(/\{[\s\S]*\}/);
     if (objectMatch) {

@@ -39,7 +39,7 @@ export default async function PositionsPage({
     query = query.ilike('title', `%${search}%`);
   }
 
-  const { data: positions, error } = await query;
+  const { data: positions } = await query;
 
   const statusColors: Record<string, 'default' | 'secondary' | 'success' | 'destructive'> = {
     active: 'success',

@@ -1,10 +1,10 @@
 import { createClient } from '@/lib/supabase/server';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Search, MapPin, Building2, Clock, Plus } from 'lucide-react';
+import { Search, MapPin, Clock, Plus } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function CandidatesPage({
@@ -73,16 +73,16 @@ export default async function CandidatesPage({
       {/* Candidates List */}
       {candidates && candidates.length > 0 ? (
         <div className="space-y-4">
-          {candidates.map((candidate: any) => {
+          {candidates.map((candidate) => {
             const initials = candidate.full_name
               .split(' ')
               .map((n: string) => n[0])
               .join('')
               .toUpperCase();
 
-            const latestCV = candidate.cvs?.find((cv: any) => cv.is_latest);
+            const latestCV = candidate.cvs?.find((cv: { is_latest: boolean }) => cv.is_latest);
             const activeApplications = candidate.applications?.filter(
-              (app: any) => !['rejected', 'withdrawn', 'l1_fail', 'l2_fail'].includes(app.status)
+              (app: { status: string }) => !['rejected', 'withdrawn', 'l1_fail', 'l2_fail'].includes(app.status)
             );
 
             return (

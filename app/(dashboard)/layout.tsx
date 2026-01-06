@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { Sidebar } from '@/components/shared/Sidebar';
+import { ToasterProvider } from '@/components/shared/ToasterProvider';
+import { CommandPalette } from '@/components/shared/CommandPalette';
 
 export default async function DashboardLayout({
   children,
@@ -32,9 +34,11 @@ export default async function DashboardLayout({
           full_name: profile?.full_name,
         }}
       />
-      <main className="flex-1 overflow-y-auto bg-muted/30">
+      <main className="flex-1 overflow-y-auto bg-muted/30 scrollbar-thin">
         <div className="container py-6">{children}</div>
       </main>
+      <CommandPalette />
+      <ToasterProvider />
     </div>
   );
 }

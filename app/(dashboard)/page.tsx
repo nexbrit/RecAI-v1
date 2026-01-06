@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FileText, Users, Clock, CheckCircle, Plus, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { DashboardClient } from '@/components/dashboard/DashboardClient';
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -145,7 +146,7 @@ export default async function DashboardPage() {
           <CardContent>
             {recentPositions && recentPositions.length > 0 ? (
               <div className="space-y-4">
-                {recentPositions.map((position: any) => (
+                {recentPositions.map((position) => (
                   <Link
                     key={position.id}
                     href={`/positions/${position.id}`}
@@ -193,7 +194,7 @@ export default async function DashboardPage() {
           <CardContent>
             {recentActivity && recentActivity.length > 0 ? (
               <div className="space-y-4">
-                {recentActivity.map((activity: any) => (
+                {recentActivity.map((activity) => (
                   <div key={activity.id} className="flex gap-4 text-sm">
                     <div className="w-2 h-2 mt-2 rounded-full bg-primary" />
                     <div className="flex-1">
@@ -254,6 +255,9 @@ export default async function DashboardPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Dashboard Analytics & Real-time Feed */}
+      <DashboardClient initialActivity={recentActivity || []} />
     </div>
   );
 }

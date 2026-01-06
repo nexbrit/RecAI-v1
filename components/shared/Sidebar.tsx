@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -9,19 +10,14 @@ import {
   FileText,
   Users,
   Search,
-  Wrench,
+  Sparkles,
   Settings,
   LogOut,
-  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 
@@ -52,28 +48,23 @@ const tools = [
   {
     title: 'JD Decoder',
     href: '/tools/jd-decoder',
-  },
-  {
-    title: 'JD Formatter',
-    href: '/tools/jd-formatter',
+    icon: Sparkles,
   },
   {
     title: 'CV Updater',
     href: '/tools/cv-updater',
+    icon: Sparkles,
   },
   {
-    title: 'Boolean Generator',
+    title: 'Boolean Search',
     href: '/tools/boolean-generator',
-  },
-  {
-    title: 'Skill Mapper',
-    href: '/tools/skill-mapper',
+    icon: Sparkles,
   },
 ];
 
 const settingsNav = [
   {
-    title: 'Skills Taxonomy',
+    title: 'Skills',
     href: '/settings/skills',
   },
   {
@@ -93,6 +84,20 @@ export function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
+  const [collapsed, setCollapsed] = useState(false);
+
+  // Load collapsed state from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('sidebar-collapsed');
+    if (saved) setCollapsed(JSON.parse(saved));
+  }, []);
+
+  // Save collapsed state to localStorage
+  const toggleCollapsed = () => {
+    const newState = !collapsed;
+    setCollapsed(newState);
+    localStorage.setItem('sidebar-collapsed', JSON.stringify(newState));
+  };
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -101,16 +106,31 @@ export function Sidebar({ user }: SidebarProps) {
   };
 
   return (
-    <div className="flex h-screen w-64 flex-col border-r bg-card">
+    <div className={cn(
+      "flex h-screen flex-col border-r bg-card transition-all duration-300",
+      collapsed ? "w-16" : "w-64"
+    )}>
       {/* Logo */}
-      <div className="flex h-16 items-center gap-2 px-6 border-b">
-        <Briefcase className="h-6 w-6 text-primary" />
-        <span className="font-bold text-lg">IntelStack RecAI</span>
+      <div className="flex h-16 items-center justify-between px-4 border-b">
+        {!collapsed && (
+          <div className="flex items-center gap-2">
+            <Briefcase className="h-6 w-6 text-primary" />
+            <span className="font-bold text-lg">IntelStack</span>
+          </div>
+        )}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggleCollapsed}
+          className="h-8 w-8"
+        >
+          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+        </Button>
       </div>
 
       {/* Main Navigation */}
-      <div className="flex-1 overflow-y-auto py-4">
-        <nav className="space-y-1 px-3">
+      <div className="flex-1 overflow-y-auto py-4 scrollbar-thin">
+        <nav className="space-y-1 px-2">
           {mainNav.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -118,91 +138,119 @@ export function Sidebar({ user }: SidebarProps) {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                  isActive
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all relative group',
+                  'before:absolute before:left-0 before:top-0 before:h-full before:w-1 before:rounded-r',
+                  'before:bg-primary before:scale-y-0 before:transition-transform',
+                  isActive && 'bg-primary/10 text-primary before:scale-y-100',
+                  !isActive && 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                 )}
+                title={collapsed ? item.title : undefined}
               >
-                <item.icon className="h-4 w-4" />
-                {item.title}
+                <item.icon className={cn("h-5 w-5", collapsed && "mx-auto")} />
+                {!collapsed && <span>{item.title}</span>}
               </Link>
             );
           })}
         </nav>
 
-        <Separator className="my-4" />
+        <Separator className="my-4 mx-3" />
 
-        {/* Tools */}
-        <div className="px-3">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="w-full justify-between text-muted-foreground hover:text-accent-foreground"
-              >
-                <span className="flex items-center gap-3">
-                  <Wrench className="h-4 w-4" />
-                  Tools
-                </span>
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-48">
-              {tools.map((tool) => (
-                <DropdownMenuItem key={tool.href} asChild>
-                  <Link href={tool.href}>{tool.title}</Link>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+        {/* AI Tools - Direct Access */}
+        <div className="px-2">
+          {!collapsed && (
+            <h4 className="px-3 mb-2 text-xs font-semibold text-muted-foreground">
+              AI TOOLS
+            </h4>
+          )}
+          <nav className="space-y-1">
+            {tools.map((tool) => {
+              const isActive = pathname === tool.href;
+              return (
+                <Link
+                  key={tool.href}
+                  href={tool.href}
+                  className={cn(
+                    'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all',
+                    isActive ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  )}
+                  title={collapsed ? tool.title : undefined}
+                >
+                  <tool.icon className={cn("h-4 w-4 text-primary", collapsed && "mx-auto")} />
+                  {!collapsed && <span>{tool.title}</span>}
+                </Link>
+              );
+            })}
+          </nav>
         </div>
 
-        <div className="px-3 mt-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="w-full justify-between text-muted-foreground hover:text-accent-foreground"
-              >
-                <span className="flex items-center gap-3">
-                  <Settings className="h-4 w-4" />
-                  Settings
-                </span>
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-48">
-              {settingsNav.map((item) => (
-                <DropdownMenuItem key={item.href} asChild>
-                  <Link href={item.href}>{item.title}</Link>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+        <Separator className="my-4 mx-3" />
+
+        {/* Settings */}
+        <div className="px-2">
+          {!collapsed && (
+            <h4 className="px-3 mb-2 text-xs font-semibold text-muted-foreground">
+              SETTINGS
+            </h4>
+          )}
+          <nav className="space-y-1">
+            {settingsNav.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all',
+                    isActive ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  )}
+                  title={collapsed ? item.title : undefined}
+                >
+                  <Settings className={cn("h-4 w-4", collapsed && "mx-auto")} />
+                  {!collapsed && <span>{item.title}</span>}
+                </Link>
+              );
+            })}
+          </nav>
         </div>
       </div>
 
       {/* User Section */}
       <div className="border-t p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">
-              {user?.full_name || 'User'}
-            </p>
-            <p className="text-xs text-muted-foreground truncate">
-              {user?.email}
-            </p>
+        {collapsed ? (
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm">
+              {user?.full_name?.[0] || user?.email?.[0] || 'U'}
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleSignOut}
+              title="Sign out"
+              className="h-8 w-8"
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleSignOut}
-            title="Sign out"
-          >
-            <LogOut className="h-4 w-4" />
-          </Button>
-        </div>
+        ) : (
+          <div className="flex items-center justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">
+                {user?.full_name || 'User'}
+              </p>
+              <p className="text-xs text-muted-foreground truncate">
+                {user?.email}
+              </p>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleSignOut}
+              title="Sign out"
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

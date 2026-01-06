@@ -5,15 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
 import {
   ArrowLeft,
   MapPin,
   Mail,
   Phone,
   Linkedin,
-  Building2,
-  Calendar,
   FileText,
   Edit,
   Download
@@ -71,8 +68,14 @@ export default async function CandidateDetailPage({
     .join('')
     .toUpperCase();
 
-  const latestCV = candidate.cvs?.find((cv: any) => cv.is_latest);
-  const parsedData = latestCV?.parsed_data as any;
+  const latestCV = candidate.cvs?.find((cv: { is_latest: boolean }) => cv.is_latest);
+  const parsedData = latestCV?.parsed_data as {
+    candidate?: { fullName?: string; email?: string; phone?: string; location?: string; linkedIn?: string; totalYearsExperience?: number };
+    skills?: Array<{ name: string; yearsExperience?: number; proficiency?: string }>;
+    experience?: Array<{ title: string; company: string; domain?: string; startDate?: string; endDate?: string; isCurrent?: boolean; responsibilities?: string[]; achievements?: string[]; technologiesUsed?: string[] }>;
+    education?: Array<{ institution: string; degree: string; field?: string; year?: number }>;
+    certifications?: Array<{ name: string; issuer?: string; year?: number }>;
+  } | undefined;
 
   return (
     <div className="space-y-6">
@@ -176,7 +179,7 @@ export default async function CandidateDetailPage({
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
-                  {parsedData.skills.map((skill: any, i: number) => (
+                  {parsedData.skills?.map((skill, i: number) => (
                     <Badge
                       key={i}
                       variant={skill.proficiency === 'expert' ? 'default' : 'secondary'}
@@ -198,11 +201,11 @@ export default async function CandidateDetailPage({
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
-                  {parsedData.experience.map((exp: any, i: number) => (
+                  {parsedData.experience?.map((exp, i: number) => (
                     <div key={i} className="flex gap-4">
                       <div className="flex flex-col items-center">
                         <div className="w-3 h-3 rounded-full bg-primary" />
-                        {i < parsedData.experience.length - 1 && (
+                        {i < (parsedData.experience?.length || 0) - 1 && (
                           <div className="w-0.5 flex-1 bg-border mt-2" />
                         )}
                       </div>
@@ -215,16 +218,16 @@ export default async function CandidateDetailPage({
                         <p className="text-sm text-muted-foreground">
                           {exp.startDate} - {exp.isCurrent ? 'Present' : exp.endDate}
                         </p>
-                        {exp.responsibilities?.length > 0 && (
+                        {exp.responsibilities && exp.responsibilities.length > 0 && (
                           <ul className="list-disc list-inside mt-2 text-sm space-y-1">
-                            {exp.responsibilities.slice(0, 3).map((resp: string, j: number) => (
+                            {exp.responsibilities?.slice(0, 3).map((resp: string, j: number) => (
                               <li key={j}>{resp}</li>
                             ))}
                           </ul>
                         )}
-                        {exp.technologiesUsed?.length > 0 && (
+                        {exp.technologiesUsed && exp.technologiesUsed.length > 0 && (
                           <div className="flex flex-wrap gap-1 mt-2">
-                            {exp.technologiesUsed.map((tech: string, j: number) => (
+                            {exp.technologiesUsed?.map((tech: string, j: number) => (
                               <Badge key={j} variant="outline" className="text-xs">
                                 {tech}
                               </Badge>
@@ -259,7 +262,7 @@ export default async function CandidateDetailPage({
             <CardContent>
               {candidate.cvs && candidate.cvs.length > 0 ? (
                 <div className="space-y-4">
-                  {candidate.cvs.map((cv: any) => (
+                  {candidate.cvs?.map((cv: { id: string; file_name: string; is_latest: boolean; created_at: string }) => (
                     <div
                       key={cv.id}
                       className="flex items-center justify-between p-4 border rounded-lg"
@@ -302,7 +305,7 @@ export default async function CandidateDetailPage({
             <CardContent>
               {candidate.applications && candidate.applications.length > 0 ? (
                 <div className="space-y-4">
-                  {candidate.applications.map((app: any) => {
+                  {candidate.applications?.map((app: { id: string; status: string; created_at: string; position?: { id: string; title: string; client?: { name: string } }; evaluations?: Array<{ overall_score?: number; recommendation?: string }> }) => {
                     const evaluation = app.evaluations?.[0];
                     return (
                       <div

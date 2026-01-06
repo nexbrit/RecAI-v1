@@ -16,8 +16,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Loader2, Wand2, FileText } from 'lucide-react';
+import { ArrowLeft, Loader2, Wand2 } from 'lucide-react';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 interface Client {
   id: string;
@@ -59,7 +60,7 @@ export default function NewPositionPage() {
     setProcessingJd(true);
     setError(null);
 
-    try {
+    const processPromise = (async () => {
       // Format JD
       const formatResponse = await fetch('/api/ai/format-jd', {
         method: 'POST',
@@ -94,6 +95,16 @@ export default function NewPositionPage() {
           setDuration(decodeData.decodedJd.duration);
         }
       }
+    })();
+
+    toast.promise(processPromise, {
+      loading: 'AI is analyzing your JD...',
+      success: 'JD processed successfully!',
+      error: (err) => `Failed to process JD: ${err.message}`,
+    });
+
+    try {
+      await processPromise;
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -106,7 +117,7 @@ export default function NewPositionPage() {
     setLoading(true);
     setError(null);
 
-    try {
+    const submitPromise = (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
@@ -129,6 +140,33 @@ export default function NewPositionPage() {
 
       if (insertError) throw insertError;
 
+      // Auto-generate boolean search if we have decoded JD
+      if (decodedJd) {
+        try {
+          const booleanResponse = await fetch('/api/ai/boolean-search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ jobRequirements: decodedJd }),
+          });
+
+          if (booleanResponse.ok) {
+            const booleanData = await booleanResponse.json();
+
+            // Update position with boolean searches
+            await supabase
+              .from('positions')
+              .update({
+                boolean_search_broad: booleanData.broadSearch?.booleanString || null,
+                boolean_search_refined: booleanData.refinedSearch?.booleanString || null,
+              })
+              .eq('id', data.id);
+          }
+        } catch (booleanError) {
+          console.error('Failed to generate boolean search:', booleanError);
+          // Don't fail position creation if boolean search fails
+        }
+      }
+
       // Log activity
       await supabase.from('activity_log').insert({
         user_id: user.id,
@@ -137,7 +175,18 @@ export default function NewPositionPage() {
         entity_id: data.id,
       });
 
-      router.push(`/positions/${data.id}`);
+      return data.id;
+    })();
+
+    toast.promise(submitPromise, {
+      loading: 'Creating position...',
+      success: 'Position created successfully!',
+      error: (err) => `Failed to create position: ${err.message}`,
+    });
+
+    try {
+      const positionId = await submitPromise;
+      router.push(`/positions/${positionId}`);
     } catch (err: any) {
       setError(err.message);
       setLoading(false);

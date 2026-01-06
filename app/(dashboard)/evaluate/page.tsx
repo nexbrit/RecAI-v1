@@ -1,12 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -14,9 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  Upload,
   FileText,
   CheckCircle,
   XCircle,
@@ -24,20 +20,38 @@ import {
   Loader2,
   ChevronRight
 } from 'lucide-react';
+import { ScoreRadarChart } from '@/components/evaluation/ScoreRadarChart';
 
 interface Position {
   id: string;
   title: string;
-  decoded_jd: any;
+  decoded_jd: Record<string, unknown>;
   client: { name: string } | null;
+}
+
+interface Evaluation {
+  evaluation_type: string;
+  overallScore?: number;
+  revisedOverallScore?: number;
+  keywordMatchPercentage?: number;
+  strengths?: Array<{ point: string; requirement_ref: string }>;
+  gaps?: Array<{ point: string; requirement_ref: string }>;
+  honestGaps?: Array<{ point: string; requirement_ref: string }>;
+  summary?: string;
+  pitchToClient?: string;
+  recommendation?: string;
+  revisedRecommendation?: string;
+  shouldSendToL2?: boolean;
+  l2Reason?: string;
+  deepAnalysis?: Record<string, { score: number; reasoning: string }>;
 }
 
 interface Application {
   id: string;
   status: string;
   candidate: { id: string; full_name: string };
-  cv: { id: string; file_name: string; parsed_data: any };
-  evaluations: any[];
+  cv: { id: string; file_name: string; parsed_data: Record<string, unknown> };
+  evaluations: Evaluation[];
 }
 
 export default function EvaluatePage() {
@@ -46,55 +60,63 @@ export default function EvaluatePage() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
   const [evaluating, setEvaluating] = useState(false);
-  const [evaluation, setEvaluation] = useState<any>(null);
+  const [evaluation, setEvaluation] = useState<Evaluation | null>(null);
   const [loading, setLoading] = useState(true);
 
   const supabase = createClient();
 
-  useEffect(() => {
-    async function fetchPositions() {
-      const { data } = await supabase
-        .from('positions')
-        .select('id, title, decoded_jd, client:clients(name)')
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
-      if (data) {
-        // Map the data to match our interface (client comes as array from join)
-        const mappedPositions = data.map((p: any) => ({
-          ...p,
-          client: Array.isArray(p.client) ? p.client[0] : p.client
-        }));
-        setPositions(mappedPositions);
-      }
-      setLoading(false);
+  const fetchPositions = useCallback(async () => {
+    const { data } = await supabase
+      .from('positions')
+      .select('id, title, decoded_jd, client:clients(name)')
+      .eq('status', 'active')
+      .order('created_at', { ascending: false });
+    if (data) {
+      const mappedPositions = data.map((p) => ({
+        ...p,
+        client: Array.isArray(p.client) ? p.client[0] : p.client
+      })) as Position[];
+      setPositions(mappedPositions);
     }
+    setLoading(false);
+  }, [supabase]);
+
+  const fetchApplications = useCallback(async () => {
+    if (!selectedPosition) {
+      setApplications([]);
+      return;
+    }
+
+    const { data } = await supabase
+      .from('applications')
+      .select(`
+        id,
+        status,
+        candidate:candidates(id, full_name),
+        cv:cvs(id, file_name, parsed_data),
+        evaluations:evaluations(*)
+      `)
+      .eq('position_id', selectedPosition)
+      .in('status', ['new', 'l1_review', 'l2_review'])
+      .order('created_at', { ascending: true });
+
+    if (data) {
+      const mappedApplications = data.map((app) => ({
+        ...app,
+        candidate: Array.isArray(app.candidate) ? app.candidate[0] : app.candidate,
+        cv: Array.isArray(app.cv) ? app.cv[0] : app.cv,
+      })) as Application[];
+      setApplications(mappedApplications);
+    }
+  }, [selectedPosition, supabase]);
+
+  useEffect(() => {
     fetchPositions();
-  }, []);
+  }, [fetchPositions]);
 
   useEffect(() => {
-    async function fetchApplications() {
-      if (!selectedPosition) {
-        setApplications([]);
-        return;
-      }
-
-      const { data } = await supabase
-        .from('applications')
-        .select(`
-          id,
-          status,
-          candidate:candidates(id, full_name),
-          cv:cvs(id, file_name, parsed_data),
-          evaluations:evaluations(*)
-        `)
-        .eq('position_id', selectedPosition)
-        .in('status', ['new', 'l1_review', 'l2_review'])
-        .order('created_at', { ascending: true });
-
-      if (data) setApplications(data as any);
-    }
     fetchApplications();
-  }, [selectedPosition]);
+  }, [fetchApplications]);
 
   const handleEvaluate = async (type: 'l1' | 'l2') => {
     if (!selectedApplication || !selectedPosition) return;
@@ -111,14 +133,14 @@ export default function EvaluatePage() {
       }
 
       const endpoint = type === 'l1' ? '/api/ai/evaluate-l1' : '/api/ai/evaluate-l2';
-      const body: any = {
+      const body: Record<string, unknown> = {
         parsedCV,
         jobRequirements: position?.decoded_jd,
       };
 
       if (type === 'l2') {
         const l1Eval = selectedApplication.evaluations?.find(
-          (e: any) => e.evaluation_type === 'l1_auto'
+          (e) => e.evaluation_type === 'l1_auto'
         );
         body.l1Evaluation = l1Eval;
         body.clientDomain = position?.client?.name;
@@ -166,7 +188,7 @@ export default function EvaluatePage() {
         .update({ status: newStatus })
         .eq('id', selectedApplication.id);
 
-    } catch (error: any) {
+    } catch (error) {
       console.error('Evaluation error:', error);
     } finally {
       setEvaluating(false);
@@ -179,7 +201,7 @@ export default function EvaluatePage() {
     return 'text-red-600';
   };
 
-  const getRecommendationIcon = (rec: string) => {
+  const getRecommendationIcon = (rec: string | undefined) => {
     if (rec?.includes('yes')) return <CheckCircle className="h-5 w-5 text-green-600" />;
     if (rec === 'maybe') return <AlertCircle className="h-5 w-5 text-yellow-600" />;
     return <XCircle className="h-5 w-5 text-red-600" />;
@@ -304,11 +326,11 @@ export default function EvaluatePage() {
                 {/* Evaluation Results */}
                 {evaluation && (
                   <div className="space-y-4">
-                    {/* Score Summary */}
+                    {/* Score Summary with Radar Chart */}
                     <div className="grid gap-4 md:grid-cols-3">
                       <div className="p-4 border rounded-lg text-center">
                         <p className="text-sm text-muted-foreground">Overall Score</p>
-                        <p className={`text-3xl font-bold ${getScoreColor(evaluation.overallScore || evaluation.revisedOverallScore)}`}>
+                        <p className={`text-3xl font-bold ${getScoreColor((evaluation.overallScore || evaluation.revisedOverallScore) ?? 0)}`}>
                           {evaluation.overallScore || evaluation.revisedOverallScore}/10
                         </p>
                       </div>
@@ -329,6 +351,41 @@ export default function EvaluatePage() {
                       </div>
                     </div>
 
+                    {/* Radar Chart Visualization */}
+                    {(evaluation.overallScore || evaluation.keywordMatchPercentage) && (
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-lg">Score Breakdown</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <ScoreRadarChart
+                            data={[
+                              {
+                                category: 'Overall',
+                                score: evaluation.overallScore || evaluation.revisedOverallScore || 0,
+                                fullMark: 10,
+                              },
+                              {
+                                category: 'Keywords',
+                                score: (evaluation.keywordMatchPercentage || 0) / 10,
+                                fullMark: 10,
+                              },
+                              {
+                                category: 'Experience',
+                                score: evaluation.deepAnalysis?.experienceLevel?.score || (evaluation.overallScore ? evaluation.overallScore * 0.8 : 0),
+                                fullMark: 10,
+                              },
+                              {
+                                category: 'Domain Fit',
+                                score: evaluation.deepAnalysis?.domainFit?.score || (evaluation.overallScore ? evaluation.overallScore * 0.7 : 0),
+                                fullMark: 10,
+                              },
+                            ]}
+                          />
+                        </CardContent>
+                      </Card>
+                    )}
+
                     {/* Summary */}
                     {(evaluation.summary || evaluation.pitchToClient) && (
                       <div className="p-4 border rounded-lg bg-muted/50">
@@ -343,7 +400,7 @@ export default function EvaluatePage() {
                         <div className="p-4 border rounded-lg">
                           <p className="font-medium mb-2 text-green-600">Strengths</p>
                           <ul className="space-y-2">
-                            {evaluation.strengths.map((s: any, i: number) => (
+                            {evaluation.strengths.map((s, i: number) => (
                               <li key={i} className="text-sm flex items-start gap-2">
                                 <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
                                 <span>{s.point}</span>
@@ -356,10 +413,10 @@ export default function EvaluatePage() {
                         <div className="p-4 border rounded-lg">
                           <p className="font-medium mb-2 text-red-600">Gaps</p>
                           <ul className="space-y-2">
-                            {(evaluation.gaps || evaluation.honestGaps).map((g: any, i: number) => (
+                            {(evaluation.gaps || evaluation.honestGaps)?.map((g, i: number) => (
                               <li key={i} className="text-sm flex items-start gap-2">
                                 <XCircle className="h-4 w-4 text-red-600 mt-0.5" />
-                                <span>{typeof g === 'string' ? g : g.point}</span>
+                                <span>{g.point}</span>
                               </li>
                             ))}
                           </ul>
@@ -372,7 +429,7 @@ export default function EvaluatePage() {
                       <div className="space-y-4">
                         <h4 className="font-medium">Deep Analysis</h4>
                         <div className="grid gap-4 md:grid-cols-2">
-                          {Object.entries(evaluation.deepAnalysis).map(([key, value]: [string, any]) => (
+                          {Object.entries(evaluation.deepAnalysis).map(([key, value]) => (
                             <div key={key} className="p-4 border rounded-lg">
                               <div className="flex items-center justify-between mb-2">
                                 <p className="font-medium capitalize">{key.replace(/([A-Z])/g, ' $1')}</p>

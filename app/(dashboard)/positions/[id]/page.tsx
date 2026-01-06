@@ -4,7 +4,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
 import {
   ArrowLeft,
   MapPin,
@@ -14,8 +13,7 @@ import {
   Archive,
   Upload,
   ExternalLink,
-  CheckCircle,
-  XCircle
+  CheckCircle
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -60,16 +58,22 @@ export default async function PositionDetailPage({
     notFound();
   }
 
-  const decodedJd = position.decoded_jd as any;
+  const decodedJd = position.decoded_jd as {
+    must_have_skills?: Array<{ name: string; years_required?: number; context?: string }>;
+    nice_to_have_skills?: Array<{ name: string; years_required?: number; context?: string }>;
+    responsibilities?: string[];
+    experience_required?: string;
+    summary?: string;
+  } | undefined;
 
   // Group applications by status
   const applicationsByStatus = {
-    new: position.applications?.filter((a: any) => a.status === 'new') || [],
-    l1_review: position.applications?.filter((a: any) => a.status === 'l1_review') || [],
-    l1_pass: position.applications?.filter((a: any) => a.status === 'l1_pass') || [],
-    l2_review: position.applications?.filter((a: any) => a.status === 'l2_review') || [],
-    submitted: position.applications?.filter((a: any) => a.status === 'submitted_to_client') || [],
-    interview: position.applications?.filter((a: any) => a.status === 'interview') || [],
+    new: position.applications?.filter((a: { status: string }) => a.status === 'new') || [],
+    l1_review: position.applications?.filter((a: { status: string }) => a.status === 'l1_review') || [],
+    l1_pass: position.applications?.filter((a: { status: string }) => a.status === 'l1_pass') || [],
+    l2_review: position.applications?.filter((a: { status: string }) => a.status === 'l2_review') || [],
+    submitted: position.applications?.filter((a: { status: string }) => a.status === 'submitted_to_client') || [],
+    interview: position.applications?.filter((a: { status: string }) => a.status === 'interview') || [],
   };
 
   const statusColors: Record<string, string> = {
@@ -240,9 +244,9 @@ export default async function PositionDetailPage({
                 <CardTitle className="text-green-600">Must Have Skills</CardTitle>
               </CardHeader>
               <CardContent>
-                {decodedJd?.must_have_skills?.length > 0 ? (
+                {decodedJd && decodedJd.must_have_skills && decodedJd.must_have_skills.length > 0 ? (
                   <ul className="space-y-3">
-                    {decodedJd.must_have_skills.map((skill: any, i: number) => (
+                    {decodedJd.must_have_skills.map((skill, i: number) => (
                       <li key={i} className="flex items-start gap-2">
                         <CheckCircle className="h-4 w-4 mt-0.5 text-green-600" />
                         <div>
@@ -271,9 +275,9 @@ export default async function PositionDetailPage({
                 <CardTitle className="text-blue-600">Nice to Have</CardTitle>
               </CardHeader>
               <CardContent>
-                {decodedJd?.nice_to_have_skills?.length > 0 ? (
+                {decodedJd && decodedJd.nice_to_have_skills && decodedJd.nice_to_have_skills.length > 0 ? (
                   <ul className="space-y-3">
-                    {decodedJd.nice_to_have_skills.map((skill: any, i: number) => (
+                    {decodedJd.nice_to_have_skills.map((skill, i: number) => (
                       <li key={i} className="flex items-start gap-2">
                         <div className="h-4 w-4 mt-0.5 rounded-full bg-blue-200" />
                         <span>{skill.name}</span>
@@ -288,7 +292,7 @@ export default async function PositionDetailPage({
           </div>
 
           {/* Responsibilities */}
-          {decodedJd?.responsibilities?.length > 0 && (
+          {decodedJd && decodedJd.responsibilities && decodedJd.responsibilities.length > 0 && (
             <Card className="mt-6">
               <CardHeader>
                 <CardTitle>Key Responsibilities</CardTitle>
@@ -326,7 +330,7 @@ export default async function PositionDetailPage({
             <CardContent>
               {position.applications && position.applications.length > 0 ? (
                 <div className="space-y-4">
-                  {position.applications.map((app: any) => (
+                  {position.applications?.map((app: { id: string; status: string; created_at: string; candidate?: { full_name: string; current_title?: string; current_company?: string }; cv?: { file_name: string }; evaluations?: Array<{ overall_score?: number; recommendation?: string }> }) => (
                     <div
                       key={app.id}
                       className="flex items-center justify-between p-4 border rounded-lg"
